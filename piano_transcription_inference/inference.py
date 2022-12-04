@@ -3,7 +3,7 @@ import numpy as np
 import time
 import librosa
 from pathlib import Path
-
+import wget 
 import torch
 
 from .utilities import (create_folder, get_filename, RegressionPostProcessor, 
@@ -25,14 +25,16 @@ class PianoTranscription(object):
           device: 'cuda' | 'cpu'
         """
         if not checkpoint_path: 
-            checkpoint_path='{}/piano_transcription_inference_data/note_F1=0.9677_pedal_F1=0.9186.pth'.format(str(Path.home()))
+            checkpoint_path=os.path.join(str(Path.home()),'piano_transcription_inference_data', 'note_F1=0.9677_pedal_F1=0.9186.pth' )
         print('Checkpoint path: {}'.format(checkpoint_path))
 
         if not os.path.exists(checkpoint_path) or os.path.getsize(checkpoint_path) < 1.6e8:
             create_folder(os.path.dirname(checkpoint_path))
             print('Total size: ~165 MB')
-            zenodo_path = 'https://zenodo.org/record/4034264/files/CRNN_note_F1%3D0.9677_pedal_F1%3D0.9186.pth?download=1'
-            os.system('wget -O "{}" "{}"'.format(checkpoint_path, zenodo_path))
+            zenodo_path = 'https://zenodo.org/record/4034264/files/CRNN_note_F1=0.9677_pedal_F1=0.9186.pth?download=1'
+            print(f"{zenodo_path=}")
+            wget.download(url=zenodo_path, out=checkpoint_path)
+            # os.system('wget -O "{}" "{}"'.format(checkpoint_path, zenodo_path))
 
         print('Using {} for inference.'.format(device))
 
